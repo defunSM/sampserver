@@ -1,0 +1,65 @@
+/*
+	gKeys 1.0
+	Playerkeys simplifier by Gamer931215
+	© http://www.gamer93.net/ 2011
+*/
+#if defined gKEYS_INCLUDED
+	#endinput
+#endif
+#define gKEYS_INCLUDED
+#include <a_samp>
+#if !defined HOLDING
+	#define HOLDING(%0) \
+		((newkeys & (%0)) == (%0))
+#endif
+#if !defined PRESSED
+	#define PRESSED(%0) \
+		(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+#endif
+#if !defined RELEASED
+	#define RELEASED(%0) \
+		(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
+#endif
+#define KEYHANDLER:%0(%1,%2)	forward handler_%0(%1,%2);   \
+							public handler_%0(%1,%2)
+#define KEY_LIMIT 20
+
+new Keys[KEY_LIMIT][26] = {
+	{KEY_ACTION, "handler_ACTION"},
+	{KEY_CROUCH, "handler_CROUCH"},
+	{KEY_FIRE, "handler_FIRE"},
+	{KEY_SPRINT, "handler_SPRINT"},
+	{KEY_SECONDARY_ATTACK, "handler_SECONDARY_ATTACK"},
+	{KEY_JUMP, "handler_JUMP"},
+	{KEY_LOOK_RIGHT, "handler_LOOK_RIGHT"},
+	{KEY_HANDBRAKE, "handler_HANDBRAKE"},
+	{KEY_LOOK_LEFT, "handler_LOOK_LEFT"},
+	{KEY_SUBMISSION, "handler_SUBMISSION"},
+	{KEY_LOOK_BEHIND, "handler_LOOK_BEHIND"},
+	{KEY_WALK, "handler_WALK"},
+	{KEY_ANALOG_UP, "handler_ANALOG_UP"},
+	{KEY_ANALOG_DOWN, "handler_ANALOG_DOWN"},
+	{KEY_ANALOG_LEFT, "handler_ANALOG_LEFT"},
+	{KEY_ANALOG_RIGHT, "handler_ANALOG_RIGHT"},
+	{KEY_UP, "handler_UP"},
+	{KEY_DOWN, "handler_DOWN"},
+	{KEY_LEFT, "handler_LEFT"},
+	{KEY_RIGHT, "handler_RIGHT"}
+};
+
+public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
+{
+	for(new i = 0; i < KEY_LIMIT; i++)
+	{
+	    if(HOLDING(Keys[i][0])) { CallLocalFunction(Keys[i][1],"ii",playerid,0); }
+		if(PRESSED(Keys[i][0])) { CallLocalFunction(Keys[i][1],"ii",playerid,1); }
+		if(RELEASED(Keys[i][0])){ CallLocalFunction(Keys[i][1],"ii",playerid,2); }
+	}
+	return CallLocalFunction("gKey_OnPlayerKeyStateChange","iii",playerid,newkeys,oldkeys);
+}
+#if defined _ALS_OnPlayerKeyStateChange
+	#undef OnPlayerKeyStateChange
+#else
+	#define _ALS_OnPlayerKeyStateChange
+#endif
+#define OnPlayerKeyStateChange gKey_OnPlayerKeyStateChange
